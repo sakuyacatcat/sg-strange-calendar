@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative './lib/sg_strange_calendar'
 
 calendar = SgStrangeCalendar.new(2024)
