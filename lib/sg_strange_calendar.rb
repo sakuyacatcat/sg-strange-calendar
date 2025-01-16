@@ -10,26 +10,22 @@ class SgStrangeCalendar
   HORIZONTAL_HEADER_SUFFIX = [*WEEKDAYS * 5, 'Su', 'Mo'].join(' ')
 
   FIRST_COLUMN_WIDTH = 4
-  HORIZONTAL_OTHER_COLUMNS_WIDTH = 2
-  VERTICAL_OTHER_COLUMNS_WIDTH = 3
+  HORIZONTAL_COLUMN_WIDTH = 2
 
   def initialize(year, today = nil)
     @year = year
     @today = today
   end
 
-  def generate(vertical: false)
+  def generate
     header = "#{@year} #{HORIZONTAL_HEADER_SUFFIX}"
     rows = MONTHS.each.with_index(1).map do |month_name, month_index|
       first_day = Date.new(@year, month_index, 1)
       last_day = Date.new(@year, month_index, -1)
-      blanks_before_first_day = Array.new(first_day.wday, ''.rjust(HORIZONTAL_OTHER_COLUMNS_WIDTH))
+      blanks_before_first_day = Array.new(first_day.wday, ''.rjust(HORIZONTAL_COLUMN_WIDTH))
+      days = (first_day..last_day).each.map { |day| day.day.to_s.rjust(HORIZONTAL_COLUMN_WIDTH) }
 
-      [
-        month_name.ljust(FIRST_COLUMN_WIDTH),
-        *blanks_before_first_day,
-        *(first_day..last_day).each.map { |day| day.day.to_s.rjust(HORIZONTAL_OTHER_COLUMNS_WIDTH) }
-      ].join(' ')
+      [month_name.ljust(FIRST_COLUMN_WIDTH), *blanks_before_first_day, *days].join(' ')
     end
     "#{header}\n#{rows.join("\n")}"
   end
