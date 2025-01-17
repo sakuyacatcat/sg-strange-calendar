@@ -23,9 +23,18 @@ class SgStrangeCalendar
       first_day = Date.new(@year, month_index, 1)
       last_day = Date.new(@year, month_index, -1)
       blanks_before_first_day = Array.new(first_day.wday, ''.rjust(HORIZONTAL_COLUMN_WIDTH))
-      days = (first_day..last_day).each.map { |day| day.day.to_s.rjust(HORIZONTAL_COLUMN_WIDTH) }
+      days = ''
+      (first_day..last_day).each.map do |day|
+        if day == @today
+          add_width = day == first_day ? 1 : 2
+          days += "[#{day.day}]".rjust(HORIZONTAL_COLUMN_WIDTH + add_width)
+        else
+          prefix_blank = day == first_day || @today == day - 1 ? '' : ' '
+          days += "#{prefix_blank}#{day.day.to_s.rjust(HORIZONTAL_COLUMN_WIDTH)}"
+        end
+      end
 
-      [month_name.ljust(FIRST_COLUMN_WIDTH), *blanks_before_first_day, *days].join(' ')
+      [month_name.ljust(FIRST_COLUMN_WIDTH), *blanks_before_first_day, days].join(' ')
     end
     "#{header}\n#{rows.join("\n")}"
   end
