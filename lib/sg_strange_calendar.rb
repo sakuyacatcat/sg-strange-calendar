@@ -7,11 +7,14 @@ class SgStrangeCalendar
   MONTHS = %w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec].freeze
   WEEKDAYS = %w[Su Mo Tu We Th Fr Sa].freeze
 
-  HORIZONTAL_HEADER_COLUMN = [*WEEKDAYS * 5, 'Su', 'Mo']
-  HORIZONTAL_HEADER = [*WEEKDAYS * 5, 'Su', 'Mo'].join(' ')
-
   FIRST_COLUMN_WIDTH = 4
+
+  HORIZONTAL_HEADER_COLUMN = [*WEEKDAYS * 5, 'Su', 'Mo'].freeze
+  HORIZONTAL_HEADER = HORIZONTAL_HEADER_COLUMN.join(' ')
   HORIZONTAL_COLUMN_WIDTH = 2
+
+  VERTICAL_HEADER = MONTHS.join(' ')
+  VERTICAL_COLUMN_WIDTH = 3
 
   def initialize(year, today = nil)
     @year = year
@@ -30,13 +33,13 @@ class SgStrangeCalendar
       last_day = Date.new(@year, month_index, -1)
 
       offset = first_day.wday
-      days_info = Array.new(offset, { day: '' })
+      days_info = Array.new(offset, { month: month_name, day: '' })
       (first_day..last_day).each do |day|
-        days_info << { day: day }
+        days_info << { month: month_name, day: day }
       end
-      days_info.fill({ day: '' }, days_info.size..HORIZONTAL_HEADER_COLUMN.size)
+      days_info.fill({ month: month_name, day: '' }, days_info.size..HORIZONTAL_HEADER_COLUMN.size)
 
-      { month_name: month_name, days: days_info }
+      days_info
     end
   end
 
@@ -44,15 +47,20 @@ class SgStrangeCalendar
     header = "#{@year} #{HORIZONTAL_HEADER}"
 
     rows = calendar_data.map do |month_data|
-      month_name_str = month_data[:month_name].ljust(FIRST_COLUMN_WIDTH)
+      month_name_str = month_data[0][:month].ljust(FIRST_COLUMN_WIDTH)
       days = ''
-      month_data[:days].map do |day_info|
+      month_data.map do |day_info|
         days += format_day(day_info[:day])
       end
 
       [month_name_str, days].join(' ').rstrip
     end
     "#{header}\n#{rows.join("\n")}"
+  end
+
+  def render_vertical(transposed_calendar_data)
+    # header = "#{@year} #{VERTICAL_HEADER}"
+    p transposed_calendar_data
   end
 
   def format_day(day)
